@@ -586,8 +586,22 @@ f_update(){
         uv sync
     fi
 
+    if [ ! -f ~/.local/bin/uv ]; then
+        echo -e "${YELLOW}Installing uv.${NC}"
+        curl -LsSf https://astral.sh/uv/install.sh | sh
+    else 
+        echo -e "${BLUE}Updating uv.${NC}"
+        uv self update
+    fi
+
     cd "$HOME/discover"
+
     sudo ./update.sh
+
+    # touch ~/discover/.update_run
+    echo $(date +%F) > ~/discover/.update_run
+
+    exit
 }
 
 ###############################################################################################################################
@@ -599,6 +613,11 @@ f_main(){
 
     if [ ! -d "$HOME"/data ]; then
         mkdir -p "$HOME"/data
+    fi
+
+    if [ ! -f "$HOME"/discover/.update_run ]; then
+        echo -e "${RED} ** Please run option '15. Update' before proceding. ** ${NC}"
+        echo
     fi
 
     echo -e "${BLUE}RECON${NC}"
@@ -622,6 +641,12 @@ f_main(){
     echo "12. Parse XML"
     echo "13. Generate a malicious payload"
     echo "14. Start a Metasploit listener"
+    if [ ! -f "$HOME"/discover/.update_run ]; then
+        echo -e "${RED}15. ** Update ** ${NC}"
+    else
+        echo "15. Update"
+    fi
+    echo "16. Exit"
     echo "15. Update"
     echo "16. Exit"
     echo
